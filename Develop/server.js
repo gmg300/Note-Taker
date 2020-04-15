@@ -31,9 +31,10 @@ app.get("/api/notes", function(req, res) {
 // Post routes
 app.post("/api/notes", function(req, res) {
   let newNote = req.body; // req.body = JSON from user input
-  let notes = fs.readFileSync("db/db.json","utf8");
-  console.log(notes);
-  fs.writeFileSync("db/db.json", JSON.stringify(newNote));
+  console.log(newNote);
+  let notes = JSON.parse(fs.readFileSync("db/db.json","utf8"));
+  notes.push(newNote);
+  fs.writeFileSync("db/db.json", JSON.stringify(notes));
   res.json(newNote);
 });
 
