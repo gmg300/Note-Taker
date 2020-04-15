@@ -13,6 +13,7 @@ const PORT = 3000;
 // Data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 // Static file serving
 app.use("/assets", express.static(path.join(__dirname,"/public","/assets")));
 app.use(express.static("public"));
@@ -23,19 +24,23 @@ app.use(express.static("public"));
 // Get routes
 app.get("/api/notes", function(req, res) {
   let notes = fs.readFileSync("db/db.json","utf8");
+  notes = JSON.parse(notes);
   return res.json(notes);
 });
+
 // Post routes
 app.post("/api/notes", function(req, res) {
-  // req.body hosts is equal to the JSON post sent from the user
-  var newNote = req.body;
-  // // Using a RegEx Pattern to remove spaces from newCharacter
-  // newNote.routeName = newNote.name.replace(/\s+/g, "").toLowerCase();
-  console.log(newNote);
-  fs.appendFileSync("db/db.json", JSON.stringify(newNote));
+  let newNote = req.body; // req.body = JSON from user input
+  let notes = fs.readFileSync("db/db.json","utf8");
+  console.log(notes);
+  fs.writeFileSync("db/db.json", JSON.stringify(newNote));
   res.json(newNote);
 });
 
+// Delete routes
+app.delete("/api/notes/:id", function(req, res) {
+
+});
 // START SERVER
 // =============================================================
 app.listen(PORT, function() {
