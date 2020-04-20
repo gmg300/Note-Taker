@@ -29,26 +29,26 @@ app.get("/notes", function(req, res) {
 });
 
 app.get("/api/notes", function(req, res) {
-  let notes = fs.readFileSync("db/db.json", "utf8");
+  let notes = fs.readFileSync(path.join(__dirname,"/db","/db.json"), "utf8");
   notes = JSON.parse(notes);
   return res.json(notes);
 });
 // Post route
 app.post("/api/notes", function(req, res) {
   let newNote = req.body; // get new note data
-  let notes = JSON.parse(fs.readFileSync("db/db.json","utf8"));
+  let notes = JSON.parse(fs.readFileSync(path.join(__dirname,"/db","/db.json"),"utf8"));
   notes.push(newNote); // add new note to notes array
   notes.map((note, i) => { // reset unique IDs for each note
     note.id = i + 1;
   });
   console.log(chalk.cyan("---- New note saved! ----")); // user feedback
-  fs.writeFileSync("db/db.json", JSON.stringify(notes, null, 2)); // Re-write file
+  fs.writeFileSync(path.join(__dirname,"/db","/db.json"), JSON.stringify(notes, null, 2)); // Re-write file
   res.json(newNote);
 });
 // Delete route
 app.delete("/api/notes/:id", function(req, res) {
   let noteNumber = +req.params.id; // get note id and change to integer
-  let notes = JSON.parse(fs.readFileSync("db/db.json", "utf8"));
+  let notes = JSON.parse(fs.readFileSync(path.join(__dirname,"/db","/db.json"), "utf8"));
   notes = notes.filter(note => { // filter deleted note from array
     return note.id !== noteNumber;
   });
@@ -56,7 +56,7 @@ app.delete("/api/notes/:id", function(req, res) {
     note.id = i + 1;
   });
   console.log(chalk.red(`---- Note ${noteNumber} deleted! ----`)); // user feedback
-  fs.writeFileSync("db/db.json", JSON.stringify(notes, null, 2)); // Re-write file
+  fs.writeFileSync(path.join(__dirname,"/db","/db.json"), JSON.stringify(notes, null, 2)); // Re-write file
   res.json(noteNumber);
 });
 
