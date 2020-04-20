@@ -3,6 +3,7 @@
 // Load packages
 const express = require("express");
 const fs = require("fs");
+const chalk = require("chalk");
 const path = require("path");
 const app = express();
 const PORT = 3000;
@@ -31,19 +32,37 @@ app.get("/api/notes", function(req, res) {
 // Post routes
 app.post("/api/notes", function(req, res) {
   let newNote = req.body; // req.body = JSON from user input
-  console.log(newNote);
+  console.log(chalk.cyan("Saving new note..."));
   let notes = JSON.parse(fs.readFileSync("db/db.json","utf8"));
-  notes.push(newNote);
-  fs.writeFileSync("db/db.json", JSON.stringify(notes));
+  notes.push(newNote); // add new note to notes array
+  notes.map((note, i) => { // reset unique IDs for each note
+    note.id = i + 1;
+  });
+  fs.writeFileSync("db/db.json", JSON.stringify(notes, null, 2));
   res.json(newNote);
 });
 
 // Delete routes
 app.delete("/api/notes/:id", function(req, res) {
-
+  let noteNumber = +req.params.id;
+  console.log(chalk.red(`Deleting note ${noteNumber}...`));
+  let notes = JSON.parse(fs.readFileSync("db/db.json", "utf8"));
+  // let deletedNote = notes.filter(note => {
+  //   console.log(note); // filter deleted note from array
+  //   return note.id === noteNumber;  
+  // });
+  // console.log(deletedNote);
+  notes = notes.filter(note => { // filter deleted note from array
+    return note.id !== noteNumber;
+  });
+  notes.map((note, i) => { // reset unique IDs for each note
+    note.id = i + 1;
+  });
+  fs.writeFileSync("db/db.json", JSON.stringify(notes, null, 2));
+  res.json(noteNumber);
 });
 // START SERVER
 // =============================================================
 app.listen(PORT, function() {
-  console.log("App listening on PORT " + PORT);
+  console.log(chalk.green("App listening on PORT " + PORT));
 });
